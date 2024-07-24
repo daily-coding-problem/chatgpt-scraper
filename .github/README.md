@@ -18,7 +18,10 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 
 ## Features
 
-- Utilizes Selenium to scrape ChatGPT conversations
+- Utilizes Selenium to scrape ChatGPT conversations.
+- Supports automated interactions with ChatGPT.
+- Facilitates fetching responses for predefined prompts.
+- Utilizes Docker for easy setup and environment management.
 
 ## Prerequisites
 
