@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "gpt-scraper"
+version = "1.0.0"
+description = "A Selenium-based ChatGPT interaction automation tool. This script initializes a browser session, interacts with ChatGPT using predefined prompts, and facilitates automated conversations with ChatGPT. Ideal for fetching responses and conducting tests or demonstrations."
+authors = ["Nicholas Adamou <nicholasadamouemail@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.32.3"
+pyfiglet = "^1.0.2"
+toml = "^0.10.2"
+pyyaml = "^6.0.1"
+psycopg2 = "^2.9.9"
+
+
+[tool.poetry.group.dev.dependencies]
+python-dotenv = "^1.0.1"
+pytest = "^8.2.2"
+pre-commit = "^3.7.1"
+black = "^24.4.2"
+selenium = "4.23.0"
+pyotp = "^2.9.0"
+undetected_chromedriver = "^3.5.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

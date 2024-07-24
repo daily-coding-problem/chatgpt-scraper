@@ -1,0 +1,13 @@
+networks:
+    dcp:
+        name: dcp
+        external: true
+
+services:
+    chatgpt-scraper:
+        build: .
+        volumes:
+            - ./scripts/entrypoint.sh:/usr/src/app/entrypoint.sh
+        entrypoint: ["/usr/src/app/entrypoint.sh"]
+        networks:
+            - dcp
