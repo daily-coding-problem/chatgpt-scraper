@@ -1,3 +1,6 @@
 import logging
+import os
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+log_level = os.getenv("LOG_LEVEL", "INFO")
+
+logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s - %(message)s')
