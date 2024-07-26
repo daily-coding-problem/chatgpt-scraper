@@ -61,27 +61,14 @@ class ChatGPTInteraction:
             logging.error(f"Element did not disappear: {value}")
             return False
 
-    def is_stop_button_present(self) -> bool:
-        """
-        Check if the stop button is present on the page.
-
-        :return: True if the stop button is present, False otherwise.
-        """
-        return self.wait_for_element(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR) is not None
-
     def send_message(self, message: str) -> str or None:
         """
         Send a message to the ChatGPT application.
 
         :param message: The message to send.
-        :return: The response received.
+        :return: The response that was received.
         """
         logging.info(f"Sending message: {message}")
-
-        # Wait for any existing stop button to disappear before sending a new message
-        while self.is_stop_button_present():
-            logging.info("Waiting for the stop button to disappear...")
-            time.sleep(1)
 
         chat_input = self.wait_for_element(By.CSS_SELECTOR, CHAT_INPUT_SELECTOR)
         if chat_input is None:
@@ -96,9 +83,7 @@ class ChatGPTInteraction:
 
         send_button.click()
 
-        if not self.wait_for_element(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR):
-            logging.error("Stop button not found after sending message")
-            return None
+        self.wait_for_element(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR)
 
         if not self.wait_for_element_disappear(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR):
             logging.error("Stop button did not disappear")
@@ -112,16 +97,24 @@ class ChatGPTInteraction:
         latest_response = all_responses[-1]
         return latest_response.text
 
-    def login(self, login_method: LoginMethod) -> bool:
+    def login(self, login_method: LoginMethod, email: str) -> bool:
         """
         Perform the login sequence using the provided login method.
 
         :param login_method: An instance of a class inherited from LoginMethod.
+        :param email: The email to use for login.
         :return: True if login is successful, False otherwise.
         """
         logging.info("Starting login process")
+
         self.click_login_button()
-        return login_method.login(self.config.accounts)
+
+        account = self.config.accounts.get(email)
+        if not account:
+            logging.error(f"Account details not found for email: {email}")
+            return False
+
+        return login_method.login(email, account)
 
     def click_login_button(self):
         """

@@ -17,5 +17,5 @@ class LoginMethod(ABC):
         self.browser = browser
 
     @abstractmethod
-    def login(self, accounts: dict) -> bool:
+    def login(self, email: str, account: dict) -> bool:
         pass

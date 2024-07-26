@@ -17,13 +17,27 @@ class BasicLogin(LoginMethod):
         self.password = None
         self.otp_auth = OTPAuth(otp_uri) if otp_uri else None
 
-    def login(self, accounts: dict) -> bool:
-        if 'email' not in accounts or 'password' not in accounts:
-            logging.error("Accounts dictionary must contain 'email' and 'password' keys.")
+    def login(self, email: str, account: dict) -> bool:
+        if not email:
+            logging.error("Email not provided.")
             return False
 
-        self.email = accounts['email']
-        self.password = accounts['password']
+        # Extract password, and secret from account dictionary
+        if not account:
+            logging.error("Account dictionary is empty.")
+            return False
+
+        self.email = email
+        self.password = account.get("password")
+        secret = account.get("secret")
+
+        if not self.password:
+            logging.error(f"Password not found for account {email}")
+            return False
+
+        if secret:
+            otp_auth_uri = OTPAuth.construct_otp_uri(email, secret)
+            self.otp_auth = OTPAuth(otp_auth_uri)
 
         if not self.enter_email():
             return False

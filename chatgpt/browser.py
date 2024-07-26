@@ -6,7 +6,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.support.ui import WebDriverWait
 from undetected_chromedriver import WebElement
 
-from utilities.is_linux import is_linux
+from .utilities.is_linux import is_linux
 
 
 class Browser:

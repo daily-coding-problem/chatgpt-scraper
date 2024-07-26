@@ -1,4 +1,6 @@
 import argparse
+import os
+
 from dotenv import load_dotenv
 
 from chatgpt.auth.accounts_deserializer import AccountsDeserializer
@@ -16,13 +18,13 @@ load_dotenv()
 accounts = AccountsDeserializer()
 
 
-def main(system_prompt: str, user_prompts: [str], config: Configuration):
+def main(account: str, system_prompt: str, user_prompts: [str], config: Configuration):
     browser = Browser("https://chatgpt.com")
     interaction = ChatGPTInteraction(browser, config)
 
-    # Log in if accounts are provided
-    if config.accounts:
-        logged_in = interaction.login(login_method=BasicLogin(browser))
+    # Log in if an account is provided
+    if account and config.get_account(account):
+        logged_in = interaction.login(login_method=BasicLogin(browser), email=account)
         if not logged_in:
             print("Failed to log in.")
             return
@@ -69,7 +71,7 @@ if __name__ == "__main__":
         "--system-prompt",
         default=system_prompt,
         type=str,
-        required=True,
+        required=False,
         help="System prompt for the chatbot."
     )
     parser.add_argument(
@@ -77,8 +79,15 @@ if __name__ == "__main__":
         default=user_prompts,
         type=str,
         nargs='+',
-        required=True,
+        required=False,
         help="User prompts for the chatbot."
+    )
+    parser.add_argument(
+        "--account",
+        default=os.getenv("CHATGPT_ACCOUNT"),
+        type=str,
+        required=False,
+        help="Account for authentication."
     )
     parser.add_argument(
         "--accounts",
@@ -90,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--temporary-chat",
         type=bool,
-        default=False,
+        default=True,
         help="Enable temporary chat mode."
     )
 
@@ -101,4 +110,4 @@ if __name__ == "__main__":
     config.accounts = args.accounts.get_all_accounts() or accounts.get_all_accounts()
 
     # Pass the arguments to the main function
-    main(args.system_prompt, args.user_prompts, config)
+    main(args.account, args.system_prompt, args.user_prompts, config)

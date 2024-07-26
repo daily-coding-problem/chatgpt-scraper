@@ -9,7 +9,6 @@ from chatgpt.browser import Browser
 # Constants for CSS Selectors
 TEMP_CHAT_MENU_SELECTOR = "div[id^='radix-'][type='button']"
 TEMP_CHAT_SWITCH_SELECTOR = "button[role='switch'][aria-label='Temporary']"
-TEMP_CHAT_CONTINUE_BUTTON_SELECTOR = "button.btn-primary"
 TEMP_CHAT_VERIFICATION_TEXT = "Temporary Chat"
 
 
@@ -26,12 +25,12 @@ class TemporaryChat:
         Enable temporary chat mode.
         """
         logging.info("Enabling temporary chat mode")
+
         if not self.click_temp_chat_menu():
             return False
         if not self.click_temp_chat_switch():
             return False
-        if not self.click_temp_chat_continue_button():
-            return False
+
         return self.verify_temporary_chat_enabled()
 
     def wait_for_element(self, by: str, value: str, timeout: int = 30):
@@ -61,12 +60,6 @@ class TemporaryChat:
         Click the switch to enable temporary chat.
         """
         return self.click_element(TEMP_CHAT_SWITCH_SELECTOR, "Temporary chat switch not found")
-
-    def click_temp_chat_continue_button(self) -> bool:
-        """
-        Click the "continue" button in the temporary chat popup.
-        """
-        return self.click_element(TEMP_CHAT_CONTINUE_BUTTON_SELECTOR, "Temporary chat continue button not found")
 
     def click_element(self, selector: str, error_message: str) -> bool:
         """
