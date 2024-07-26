@@ -99,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--temporary-chat",
         type=bool,
-        default=True,
+        default=False,
         help="Enable temporary chat mode."
     )
 
