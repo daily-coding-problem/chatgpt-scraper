@@ -21,6 +21,8 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 - Utilizes Selenium to scrape ChatGPT conversations.
 - Supports automated interactions with ChatGPT.
 - Facilitates fetching responses for predefined prompts.
+- Supports multiple login methods for ChatGPT (Basic, Google, Facebook, etc.).
+- Supports 2FA for secure login methods.
 - Utilizes Docker for easy setup and environment management.
 
 ## Prerequisites
@@ -70,11 +72,7 @@ docker network create dcp
 
 **Environment Variables**
 
-Create a `.env` file in the project root with the following content:
-
-```env
-
-```
+Create a `.env` file in the project root containing the content from [`.env.example`](/.env.example). Modify the values as needed.
 
 ## Usage
 

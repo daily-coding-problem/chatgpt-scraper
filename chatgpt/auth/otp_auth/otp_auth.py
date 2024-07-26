@@ -15,6 +15,9 @@ class OTPAuth:
 
         # Get the path and split it to extract the environment and user
         path_parts = result.path.strip("/").split(":")
+        if len(path_parts) != 2 or not path_parts[1]:
+            raise ValueError("Invalid URI format")
+
         if "@" in path_parts[1]:
             self.talent_id = path_parts[1].split("@")[0]
         else:
@@ -24,6 +27,9 @@ class OTPAuth:
 
         # Extract the query parameters
         parameters = parse_qs(result.query)
+
+        if 'secret' not in parameters or 'issuer' not in parameters:
+            raise ValueError("Missing required query parameters")
 
         self.secret = parameters['secret'][0]
         self.issuer = parameters['issuer'][0]

@@ -5,7 +5,11 @@ import time
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+
+from chatgpt.auth.login_method import LOGIN_BUTTON_SELECTOR, LoginMethod
 from chatgpt.browser import Browser
+from chatgpt.configuration import Configuration
+from chatgpt.temporary_chat import TemporaryChat
 
 # Constants for CSS Selectors
 CHAT_INPUT_SELECTOR = "textarea[id='prompt-textarea']"
@@ -19,8 +23,11 @@ class ChatGPTInteraction:
     Class to interact with the ChatGPT application.
     """
 
-    def __init__(self, browser: Browser):
+    def __init__(self, browser: Browser, config: Configuration):
         self.browser = browser
+        self.config = config
+
+        self.temporary_chat = TemporaryChat(browser)
 
     def wait_for_element(self, by: str, value: str, timeout: int = 30):
         """
@@ -98,9 +105,36 @@ class ChatGPTInteraction:
             return None
 
         self.browser.wait_until(
-            len(self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)) > initial_responses_count
+            lambda driver: len(self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)) > initial_responses_count
         )
 
         all_responses = self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)
         latest_response = all_responses[-1]
         return latest_response.text
+
+    def login(self, login_method: LoginMethod) -> bool:
+        """
+        Perform the login sequence using the provided login method.
+
+        :param login_method: An instance of a class inherited from LoginMethod.
+        :return: True if login is successful, False otherwise.
+        """
+        logging.info("Starting login process")
+        self.click_login_button()
+        return login_method.login(self.config.accounts)
+
+    def click_login_button(self):
+        """
+        Click the login button.
+        """
+        logging.info("Clicking the login button")
+        if login_button := self.wait_for_element(By.CSS_SELECTOR, LOGIN_BUTTON_SELECTOR):
+            login_button.click()
+        else:
+            logging.error("Login button not found")
+
+    def enable_temporary_chat(self) -> bool:
+        """
+        Enable temporary chat mode.
+        """
+        return self.temporary_chat.enable_temporary_chat()
