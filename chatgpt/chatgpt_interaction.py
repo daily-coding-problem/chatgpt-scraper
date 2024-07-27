@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-from chatgpt.auth.login_method import LOGIN_BUTTON_SELECTOR, LoginMethod
+from chatgpt.auth.login_method import LoginMethod, LOGIN_BUTTON_SELECTOR
 from chatgpt.browser import Browser
 from chatgpt.configuration import Configuration
 from chatgpt.temporary_chat import TemporaryChat

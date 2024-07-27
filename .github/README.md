@@ -21,7 +21,7 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 - Utilizes Selenium to scrape ChatGPT conversations.
 - Supports automated interactions with ChatGPT.
 - Facilitates fetching responses for predefined prompts.
-- Supports multiple login methods for ChatGPT (Basic, Google, Facebook, etc.).
+- Supports multiple login methods for ChatGPT (Basic and Google).
 - Supports 2FA for secure login methods.
 - Utilizes Docker for easy setup and environment management.
 

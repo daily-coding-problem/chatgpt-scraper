@@ -1,10 +1,12 @@
+import logging
 import argparse
 import os
+from typing import List
 
 from dotenv import load_dotenv
 
 from chatgpt.auth.accounts_deserializer import AccountsDeserializer
-from chatgpt.auth.methods.basic_login import BasicLogin
+from chatgpt.auth.login_method import LoginMethod
 from chatgpt.configuration import Configuration
 from utilities import print_random_banner
 from utilities.poetry import get_name, get_description, get_authors, get_version
@@ -18,24 +20,41 @@ load_dotenv()
 accounts = AccountsDeserializer()
 
 
-def main(account: str, system_prompt: str, user_prompts: [str], config: Configuration):
+def main(account: str, system_prompt: str, user_prompts: List[str], config: Configuration):
     browser = Browser("https://chatgpt.com")
     interaction = ChatGPTInteraction(browser, config)
 
-    # Log in if an account is provided
-    if account and config.get_account(account):
-        logged_in = interaction.login(login_method=BasicLogin(browser), email=account)
-        if not logged_in:
-            print("Failed to log in.")
-            return
+    if not handle_login(account, config, interaction):
+        logging.error("Failed to log in.")
+        return
 
     chatbot = ChatBot(interaction)
-
-    # Run the chat with the provided prompts
     chatbot.chat(system_prompt, user_prompts)
-
-    # Clean up by quitting the browser
     browser.quit()
+
+
+def handle_login(account: str, config: Configuration, interaction: ChatGPTInteraction) -> bool:
+    """
+    Handle the login process if an account is provided.
+
+    :param account: The account email or identifier.
+    :param config: The configuration object.
+    :param interaction: The ChatGPTInteraction object.
+    :return: True if login is successful, False otherwise.
+    """
+    if not account:
+        logging.info("No account provided. Skipping login.")
+        return True
+
+    account_details = config.get_account(account)
+
+    if not account_details:
+        logging.error(f"Account details not found for email: {account}")
+        return False
+
+    login_method = LoginMethod.derive_login_provider(account_details)
+
+    return interaction.login(login_method=login_method(interaction.browser), email=account)
 
 
 if __name__ == "__main__":
