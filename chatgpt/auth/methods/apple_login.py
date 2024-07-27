@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 
 
 class AppleLogin(LoginMethod):
-    def login(self, accounts: dict) -> bool:
+    def login(self, email: str, accounts: dict) -> bool:
         if apple_login_button := self.browser.wait_until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, APPLE_LOGIN_BUTTON_SELECTOR)

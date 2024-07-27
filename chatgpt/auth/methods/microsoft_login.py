@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 
 
 class MicrosoftLogin(LoginMethod):
-    def login(self, accounts: dict) -> bool:
+    def login(self, email: str, accounts: dict) -> bool:
         if microsoft_login_button := self.browser.wait_until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, MICROSOFT_LOGIN_BUTTON_SELECTOR)
