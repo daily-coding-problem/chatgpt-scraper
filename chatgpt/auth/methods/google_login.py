@@ -1,16 +1,24 @@
 from chatgpt.auth.generate_otp import generate_otp
 from chatgpt.auth.login_method import LoginMethod
 
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-GOOGLE_LOGIN_BUTTON_SELECTOR = "button[data-testid='google-login-button']"
-EMAIL_INPUT_SELECTOR = "input[type='email']"
-PASSWORD_INPUT_SELECTOR = "input[type='password']"
+from chatgpt.auth.otp_auth.otp_auth import Providers
+
+GOOGLE_LOGIN_BUTTON_XPATH = "//button[span[contains(text(), 'Continue with Google')]]"
+EMAIL_INPUT_XPATH = "//input[@type='email']"
+PASSWORD_INPUT_XPATH = "//input[@type='password']"
 NEXT_BUTTON_XPATH = "//button[span[contains(text(), 'Next')]]"
-TRY_ANOTHER_WAY_LINK_XPATH = "//button[contains(text(), 'Try another way')]"
-SELECT_AUTHENTICATOR_APP_XPATH = "//div[contains(text(), 'Google Authenticator')]"
-CODE_TOKEN_INPUT_SELECTOR = "input[id='totpPin']"
+TRY_ANOTHER_WAY_LINK_XPATH = "//button[span[text()='Try another way']]"
+SELECT_AUTHENTICATOR_APP_XPATH = "//li[contains(.,'Google Authenticator')]"
+CODE_TOKEN_INPUT_XPATH = "//input[@id='totpPin']"
+
+# Additional 2FA handling for ChatGPT
+# There is an additional 2FA screen for ChatGPT even after entering Google Authenticator code.
+# This is because you could configure your ChatGPT account to have a separate 2FA code.
+VERIFY_YOUR_IDENTITY_XPATH = "//*[contains(text(), 'Verify Your Identity')]"
+CHATGPT_CODE_TOKEN_INPUT_XPATH = "//input[@name='code']"
+SUBMIT_BUTTON_XPATH = "//button[@type='submit']"
 
 
 class GoogleLogin(LoginMethod):
@@ -18,76 +26,48 @@ class GoogleLogin(LoginMethod):
         super().__init__(browser, otp_uri)
 
     def login(self, email: str, account: dict) -> bool:
+        # Extract account info and check for success
         if not self.extract_account_info(email, account):
             return False
 
-        if not self.click_google_login_button():
-            return False
-
-        if not self.enter_email(self.email, EMAIL_INPUT_SELECTOR, NEXT_BUTTON_XPATH, use_xpath=True):
-            return False
-
-        if not self.enter_password(self.password, PASSWORD_INPUT_SELECTOR, NEXT_BUTTON_XPATH, use_xpath=True):
-            return False
-
-        if self.try_another_way():
-            if not self.select_authenticator_app():
-                return False
-
-            if self.otp_auth:
-                otp_token = generate_otp(self.otp_auth.get_secret())
-                if not self.enter_2fa_token(otp_token, CODE_TOKEN_INPUT_SELECTOR, NEXT_BUTTON_XPATH, use_xpath=True):
-                    return False
-
-            return False
-
-        return True
-
-    def click_google_login_button(self) -> bool:
-        """
-        Click the Google login button.
-
-        :return: True if Google login button is clicked successfully, False otherwise.
-        """
-        if google_login_button := self.browser.wait_until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, GOOGLE_LOGIN_BUTTON_SELECTOR)
-            )
-        ):
-            google_login_button.click()
-            return True
-
-        return False
-
-    def try_another_way(self) -> bool:
-        """
-        Click the "Try another way" link.
-
-        :return: True if the link is clicked successfully, False otherwise.
-        """
-        if try_another_way_link := self.browser.wait_until(
-            EC.presence_of_element_located(
-                (By.XPATH, TRY_ANOTHER_WAY_LINK_XPATH)
-            )
-        ):
-            try_another_way_link.click()
-            return True
-
-        return False
-
-    def select_authenticator_app(self) -> bool:
-        """
-        Select the authenticator app option.
-
-        :return: True if the authenticator app option is selected successfully, False otherwise.
-        """
-        authenticator_app_option = self.browser.wait_until(
-            EC.presence_of_element_located(
-                (By.XPATH, SELECT_AUTHENTICATOR_APP_XPATH)
-            )
+        # Perform Google login steps and return status
+        return (
+            self._click_element(By.XPATH, GOOGLE_LOGIN_BUTTON_XPATH) and
+            self.enter_email(self.email, EMAIL_INPUT_XPATH, NEXT_BUTTON_XPATH, use_xpath=True) and
+            self.enter_password(self.password, PASSWORD_INPUT_XPATH, NEXT_BUTTON_XPATH, use_xpath=True) and
+            self._handle_2fa()
         )
-        if authenticator_app_option:
-            authenticator_app_option.click()
+
+    def _handle_2fa(self) -> bool:
+        """
+        Handle Two-Factor Authentication (2FA) if needed.
+        :return: True if 2FA is handled successfully or not needed, False otherwise.
+        """
+        if (
+            self._click_element(By.XPATH, TRY_ANOTHER_WAY_LINK_XPATH) and
+            self._click_element(By.XPATH, SELECT_AUTHENTICATOR_APP_XPATH)
+        ):
+            if self.otp_auth:
+                otp_token = generate_otp(self.otp_auth[Providers.GOOGLE.value].get_secret())
+                if self.enter_2fa_token(
+                    otp_token,
+                    CODE_TOKEN_INPUT_XPATH,
+                    NEXT_BUTTON_XPATH,
+                    use_xpath=True
+                ):
+                    # We could be brought to another 2FA screen.
+                    # So, we check if the page contains "Verify Your Identity"
+                    # to handle the additional 2FA.
+                    if self._find_element(By.XPATH, VERIFY_YOUR_IDENTITY_XPATH):
+                        otp_token = generate_otp(self.otp_auth[Providers.CHATGPT.value].get_secret())
+                        self.enter_2fa_token(
+                            otp_token,
+                            CHATGPT_CODE_TOKEN_INPUT_XPATH,
+                            SUBMIT_BUTTON_XPATH,
+                            use_xpath=True
+                        )
+
             return True
 
         return False
+

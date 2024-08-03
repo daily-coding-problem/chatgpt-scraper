@@ -1,4 +1,10 @@
+from enum import Enum
 from urllib.parse import urlparse, unquote, parse_qs, urlencode
+
+
+class Providers(Enum):
+    GOOGLE = "google"
+    CHATGPT = "chatgpt"
 
 
 class OTPAuth:
@@ -101,4 +107,14 @@ class OTPAuth:
             'period': period
         }
         return f"otpauth://totp/{label}?{urlencode(params)}"
+
+    @staticmethod
+    def derive_issuer_by_provider(provider: str) -> str:
+        """
+        Derive the issuer name based on the provider.
+        """
+        if provider == "google":
+            return "Google"
+
+        return "OpenAI"
 

@@ -1,10 +1,9 @@
 import random
 import time
-
 import undetected_chromedriver as uc
 
 from selenium.webdriver.support.ui import WebDriverWait
-from undetected_chromedriver import WebElement
+from selenium.webdriver.remote.webelement import WebElement
 
 from .utilities.is_linux import is_linux
 
@@ -56,7 +55,7 @@ class Browser:
         """
         return self.driver.find_element(by, value)
 
-    def find_elements(self, by: str, value: str) -> list:
+    def find_elements(self, by: str, value: str) -> list[WebElement]:
         """
         Find multiple elements on the page.
 

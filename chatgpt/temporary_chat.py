@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from chatgpt.browser import Browser
+from chatgpt.element_interactor import ElementInteractor
 
 # Constants for CSS Selectors
 TEMP_CHAT_MENU_SELECTOR = "div[id^='radix-'][type='button']"
@@ -19,6 +20,7 @@ class TemporaryChat:
 
     def __init__(self, browser: Browser):
         self.browser = browser
+        self.element_interactor = ElementInteractor(browser)
 
     def enable_temporary_chat(self) -> bool:
         """
@@ -32,22 +34,6 @@ class TemporaryChat:
             return False
 
         return self.verify_temporary_chat_enabled()
-
-    def wait_for_element(self, by: str, value: str, timeout: int = 30):
-        """
-        Wait for an element to be present on the page.
-
-        :param by: The locator strategy.
-        :param value: The locator value.
-        :param timeout: The maximum time to wait for the element.
-        :return: The web element if found, None otherwise.
-        """
-        try:
-            logging.info(f"Waiting for element: {value}")
-            return self.browser.wait_until(EC.presence_of_element_located((by, value)), timeout)
-        except TimeoutException:
-            logging.error(f"Element not found: {value}")
-            return None
 
     def click_temp_chat_menu(self) -> bool:
         """
@@ -69,8 +55,7 @@ class TemporaryChat:
         :param error_message: The error message to log if the element is not found.
         :return: True if the element was clicked successfully, False otherwise.
         """
-        if element := self.wait_for_element(By.CSS_SELECTOR, selector):
-            element.click()
+        if self.element_interactor.interact_with_element(By.CSS_SELECTOR, selector):
             return True
         logging.error(error_message)
         return False
@@ -79,7 +64,7 @@ class TemporaryChat:
         """
         Verify that temporary chat is enabled by checking for the presence of specific text.
         """
-        if self.wait_for_element(By.XPATH, f"//div[text()='{TEMP_CHAT_VERIFICATION_TEXT}']"):
+        if self.element_interactor.wait_for_element(By.XPATH, f"//div[text()='{TEMP_CHAT_VERIFICATION_TEXT}']"):
             logging.info("Temporary chat mode enabled successfully")
             return True
         logging.error("Temporary chat verification text not found")
