@@ -14,6 +14,9 @@ from chatgpt.browser import Browser
 from chatgpt.chatbot import ChatBot
 from chatgpt.chatgpt_interaction import ChatGPTInteraction
 
+# In order, for our logging configuration to take effect, we need to import the logger_config module.
+import chatgpt.logger_config
+
 # Load environment variables
 load_dotenv()
 
@@ -21,6 +24,10 @@ accounts = AccountsDeserializer()
 
 
 def main(account: str, system_prompt: str, user_prompts: List[str], config: Configuration):
+    if not account and config.use_temporary_chat:
+        logging.warning("Temporary chat mode is enabled but no account is provided. Disabling temporary chat mode.")
+        config.use_temporary_chat = False
+
     browser = Browser("https://chatgpt.com")
     interaction = ChatGPTInteraction(browser, config)
 
