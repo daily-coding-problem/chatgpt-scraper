@@ -2,13 +2,12 @@ import logging
 import random
 import time
 
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from chatgpt.auth.login_method import LoginMethod, LOGIN_BUTTON_SELECTOR
 from chatgpt.browser import Browser
 from chatgpt.configuration import Configuration
+from chatgpt.element_interactor import ElementInteractor
 from chatgpt.temporary_chat import TemporaryChat
 
 # Constants for CSS Selectors
@@ -27,39 +26,8 @@ class ChatGPTInteraction:
         self.browser = browser
         self.config = config
 
+        self.element_interactor = ElementInteractor(browser)
         self.temporary_chat = TemporaryChat(browser)
-
-    def wait_for_element(self, by: str, value: str, timeout: int = 30):
-        """
-        Wait for an element to be present on the page.
-
-        :param by: The locator strategy.
-        :param value: The locator value.
-        :param timeout: The maximum time to wait for the element.
-        :return: The web element if found, None otherwise.
-        """
-        try:
-            logging.info(f"Waiting for element: {value}")
-            return self.browser.wait_until(EC.presence_of_element_located((by, value)), timeout)
-        except TimeoutException:
-            logging.error(f"Element not found: {value}")
-            return None
-
-    def wait_for_element_disappear(self, by: str, value: str, timeout: int = 30):
-        """
-        Wait for an element to disappear from the page.
-
-        :param by: The locator strategy.
-        :param value: The locator value.
-        :param timeout: The maximum time to wait for the element to disappear.
-        :return: True if the element disappears, False otherwise.
-        """
-        try:
-            logging.info(f"Waiting for element to disappear: {value}")
-            return self.browser.wait_until(EC.invisibility_of_element_located((by, value)), timeout)
-        except TimeoutException:
-            logging.error(f"Element did not disappear: {value}")
-            return False
 
     def send_message(self, message: str) -> str or None:
         """
@@ -70,7 +38,7 @@ class ChatGPTInteraction:
         """
         logging.info(f"Sending message: {message}")
 
-        chat_input = self.wait_for_element(By.CSS_SELECTOR, CHAT_INPUT_SELECTOR)
+        chat_input = self.element_interactor.wait_for_element(By.CSS_SELECTOR, CHAT_INPUT_SELECTOR)
         if chat_input is None:
             return None
 
@@ -78,22 +46,22 @@ class ChatGPTInteraction:
             chat_input.send_keys(char)
             time.sleep(random.uniform(0.05, 0.2))
 
-        send_button = self.browser.find_element(By.CSS_SELECTOR, SEND_BUTTON_SELECTOR)
-        initial_responses_count = len(self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR))
+        send_button = self.element_interactor.find_element(By.CSS_SELECTOR, SEND_BUTTON_SELECTOR)
+        initial_responses_count = len(self.element_interactor.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR))
 
         send_button.click()
 
-        self.wait_for_element(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR)
+        self.element_interactor.wait_for_element(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR)
 
-        if not self.wait_for_element_disappear(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR):
+        if not self.element_interactor.wait_for_element_disappear(By.CSS_SELECTOR, STOP_BUTTON_SELECTOR):
             logging.error("Stop button did not disappear")
             return None
 
         self.browser.wait_until(
-            lambda driver: len(self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)) > initial_responses_count
+            len(self.element_interactor.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)) > initial_responses_count
         )
 
-        all_responses = self.browser.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)
+        all_responses = self.element_interactor.find_elements(By.CSS_SELECTOR, RESPONSE_SELECTOR)
         latest_response = all_responses[-1]
         return latest_response.text
 
@@ -121,7 +89,7 @@ class ChatGPTInteraction:
         Click the login button.
         """
         logging.info("Clicking the login button")
-        if login_button := self.wait_for_element(By.CSS_SELECTOR, LOGIN_BUTTON_SELECTOR):
+        if login_button := self.element_interactor.wait_for_element(By.CSS_SELECTOR, LOGIN_BUTTON_SELECTOR):
             login_button.click()
         else:
             logging.error("Login button not found")
