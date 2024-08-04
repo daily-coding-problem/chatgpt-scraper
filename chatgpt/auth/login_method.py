@@ -70,7 +70,7 @@ class LoginMethod(ABC):
 
         return True
 
-    def _find_element(self, by_type: str, selector: str):
+    def find_element(self, by_type: str, selector: str):
         """
         Helper method to find an element.
 
@@ -80,7 +80,7 @@ class LoginMethod(ABC):
         """
         return self.element_interactor.find_element(by_type or By.CSS_SELECTOR, selector)
 
-    def _click_element(self, by_type: str, selector: str) -> bool:
+    def click_element(self, by_type: str, selector: str) -> bool:
         """
         Helper method to click an element.
 

@@ -34,7 +34,7 @@ class GoogleLogin(LoginMethod):
 
         # Perform Google login steps and return status
         return (
-            self._click_element(By.XPATH, GOOGLE_LOGIN_BUTTON_XPATH) and
+            self.click_element(By.XPATH, GOOGLE_LOGIN_BUTTON_XPATH) and
             self.enter_email(self.email, EMAIL_INPUT_XPATH, NEXT_BUTTON_XPATH, use_xpath=True) and
             self.enter_password(self.password, PASSWORD_INPUT_XPATH, NEXT_BUTTON_XPATH, use_xpath=True) and
             self._handle_2fa()
@@ -48,8 +48,8 @@ class GoogleLogin(LoginMethod):
         time.sleep(2)  # Wait for the page to load
 
         if (
-            self._click_element(By.XPATH, TRY_ANOTHER_WAY_LINK_XPATH) and
-            self._click_element(By.XPATH, SELECT_AUTHENTICATOR_APP_XPATH)
+            self.click_element(By.XPATH, TRY_ANOTHER_WAY_LINK_XPATH) and
+            self.click_element(By.XPATH, SELECT_AUTHENTICATOR_APP_XPATH)
         ):
             if self.otp_auth:
                 otp_token = generate_otp(self.otp_auth[Providers.GOOGLE.value].get_secret())
@@ -62,7 +62,7 @@ class GoogleLogin(LoginMethod):
                     # We could be brought to another 2FA screen.
                     # So, we check if the page contains "Verify Your Identity"
                     # to handle the additional 2FA.
-                    if self._find_element(By.XPATH, VERIFY_YOUR_IDENTITY_XPATH):
+                    if self.find_element(By.XPATH, VERIFY_YOUR_IDENTITY_XPATH):
                         otp_token = generate_otp(self.otp_auth[Providers.CHATGPT.value].get_secret())
                         self.enter_2fa_token(
                             otp_token,
