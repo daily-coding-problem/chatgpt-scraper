@@ -16,7 +16,6 @@ class ChatBot:
         :param user_prompts: The list of user prompts.
         """
         if self.interaction.config.use_temporary_chat:
-            logging.info("Enabling temporary chat mode")
             if not self.interaction.enable_temporary_chat():
                 logging.error("Failed to enable temporary chat mode")
                 return

@@ -1,3 +1,5 @@
+import time
+
 from chatgpt.auth.generate_otp import generate_otp
 from chatgpt.auth.login_method import LoginMethod
 
@@ -43,6 +45,8 @@ class GoogleLogin(LoginMethod):
         Handle Two-Factor Authentication (2FA) if needed.
         :return: True if 2FA is handled successfully or not needed, False otherwise.
         """
+        time.sleep(2)  # Wait for the page to load
+
         if (
             self._click_element(By.XPATH, TRY_ANOTHER_WAY_LINK_XPATH) and
             self._click_element(By.XPATH, SELECT_AUTHENTICATOR_APP_XPATH)
