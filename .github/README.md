@@ -13,12 +13,13 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
+	- [Configuring TEST_ACCOUNTS](#configuring-test_accounts)
 - [Usage](#usage)
 - [License](#license)
 
 ## Features
 
-- Utilizes Selenium to scrape ChatGPT conversations.
+- Uses Selenium to scrape ChatGPT conversations.
 - Supports automated interactions with ChatGPT.
 - Facilitates fetching responses for predefined prompts.
 - Supports multiple login methods for ChatGPT (Basic and Google).
@@ -70,9 +71,105 @@ docker network create dcp
 
 ## Configuration
 
-**Environment Variables**
+### Environment Variables
 
-Create a `.env` file in the project root containing the content from [`.env.example`](/.env.example). Modify the values as needed.
+Create a .env file in the project root containing the content from [.env.example](/.env.example). Modify the values as needed.
+
+#### Configuring `TEST_ACCOUNTS`
+
+The `TEST_ACCOUNTS` environment variable is used to securely store and pass credentials for test accounts to the ChatGPT scraper. These credentials need to be formatted as a base64-encoded JSON structure.
+
+You can use the [Accounts Serializer](https://github.com/daily-coding-problem/accounts-serializer) tool to generate this JSON structure and encode it.
+
+**Steps to Configure `TEST_ACCOUNTS`:**
+
+1. **Clone the Accounts Serializer Repository**
+
+   ```sh
+   git clone https://github.com/daily-coding-problem/accounts-serializer.git
+   cd accounts-serializer
+   ```
+
+2. **Install Dependencies**
+
+   Ensure you have Python 3.11 or higher and Poetry installed. Then run:
+
+   ```sh
+   poetry install
+   ```
+
+3. **Generate the JSON Structure**
+
+   Run the `accounts_serializer.py` script with your account details:
+
+   ```sh
+   poetry run python accounts_serializer.py \
+       --emails test@company.com user@anothercompany.com \
+       --passwords password123 userpassword456 \
+       --providers basic basic \
+       --secrets google:google-secret-abc chatgpt:chatgpt-secret-xyz github:github-secret-123 aws:aws-secret-789
+   ```
+
+   This command will output a JSON structure like the following:
+
+   ```json
+   {
+       "test@company.com": {
+           "provider": "basic",
+           "password": "password123",
+           "secret": {
+               "google": "google-secret-abc",
+               "chatgpt": "chatgpt-secret-xyz"
+           }
+       },
+       "user@anothercompany.com": {
+           "provider": "basic",
+           "password": "userpassword456",
+           "secret": {
+               "github": "github-secret-123",
+               "aws": "aws-secret-789"
+           }
+       }
+   }
+   ```
+
+4. **Base64 Encode the JSON Structure**
+
+   Use a tool or script to base64 encode the JSON structure:
+
+   ```sh
+   echo -n '{"test@company.com": {"provider": "basic", "password": "password123", "secret": {"google": "google-secret-abc", "chatgpt": "chatgpt-secret-xyz"}}, "user@anothercompany.com": {"provider": "basic", "password": "userpassword456", "secret": {"github": "github-secret-123", "aws": "aws-secret-789"}}}' | base64
+   ```
+
+5. **Set the `TEST_ACCOUNTS` Environment Variable**
+
+   Copy the base64-encoded string and set it as the value of the `TEST_ACCOUNTS` environment variable in your `.env` file or directly in your shell environment.
+
+   ```sh
+   export TEST_ACCOUNTS="eyJ0ZXN0QGNvbXBhbnkuY29tIjogeyJwcm92aWRlciI6ICJiYXNpYyIsICJwYXNzd29yZCI6ICJwYXNzd29yZDEyMyIsICJzZWNyZXQiOiB7Imdvb2dsZSI6ICJnb29nbGUtc2VjcmV0LWFiYyIsICJjaGF0Z3B0IjogImNoYXRncHQtc2VjcmV0LXh5eiJ9fSwgInVzZXJAYW5vdGhlcmNvbXBhbnkuY29tIjogeyJwcm92aWRlciI6ICJiYXNpYyIsICJwYXNzd29yZCI6ICJ1c2VycGFzc3dvcmQ0NTYiLCAic2VjcmV0IjogeyJnaXRodWIiOiAiZ2l0aHViLXNlY3JldC0xMjMiLCAiYXdzIjogImF3cy1zZWNyZXQtNzg5In19fQ=="
+   ```
+
+   Now, `TEST_ACCOUNTS` is configured and ready to be used by the ChatGPT scraper.
+
+#### Target a Specific ChatGPT Account
+
+   If you want to target a specific account, you can set the `CHATGPT_ACCOUNT` environment variable with the email of the account you want to use.
+
+   ```sh
+   export CHATGPT_ACCOUNT="some-email@company.com"
+   ```
+
+   The email should be one of the emails in the `TEST_ACCOUNTS` JSON structure.
+
+#### Use _Temporary Chat_ Mode
+
+   If you want to use the _Temporary Chat_ mode, set the `TEMPORARY_CHAT` environment variable to `true`.
+
+   ```sh
+   export TEMPORARY_CHAT="true"
+   ```
+
+   If set to `true`, this will toggle the _temporary chat_ mode in ChatGPT's interface and not store any chat history.
 
 ## Usage
 
