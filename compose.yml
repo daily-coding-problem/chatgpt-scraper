@@ -8,6 +8,8 @@ services:
         build: .
         volumes:
             - ./scripts/entrypoint.sh:/usr/src/app/entrypoint.sh
+        env_file:
+            - .env
         entrypoint: ["/usr/src/app/entrypoint.sh"]
         networks:
             - dcp

@@ -28,7 +28,7 @@ def main(account: str, system_prompt: str, user_prompts: List[str], config: Conf
         logging.warning("Temporary chat mode is enabled but no account is provided. Disabling temporary chat mode.")
         config.use_temporary_chat = False
 
-    browser = Browser("https://chatgpt.com")
+    browser = Browser("https://chatgpt.com", config.headless)
     interaction = ChatGPTInteraction(browser, config)
 
     if not handle_login(account, config, interaction):
@@ -128,12 +128,19 @@ if __name__ == "__main__":
         default=os.getenv("CHATGPT_TEMPORARY_CHAT"),
         help="Enable temporary chat mode."
     )
+    parser.add_argument(
+        "--headless",
+        type=bool,
+        default=os.getenv("CHATGPT_HEADLESS"),
+        help="Run the browser in headless mode."
+    )
 
     args = parser.parse_args()
 
     # Update the configuration with the provided arguments
     config.use_temporary_chat = args.temporary_chat
     config.accounts = args.accounts.get_all_accounts() or accounts.get_all_accounts()
+    config.headless = args.headless
 
     # Pass the arguments to the main function
     main(args.account, args.system_prompt, args.user_prompts, config)

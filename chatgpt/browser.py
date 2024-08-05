@@ -3,10 +3,6 @@ import time
 
 import undetected_chromedriver as uc
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.select import Select
-from selenium.webdriver.support import expected_conditions as EC
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -17,14 +13,14 @@ class Browser:
     """
     Class to interact with a Selenium browser.
     """
-    def __init__(self, application_url: str):
+    def __init__(self, application_url: str, headless: bool = False):
         self.application_url = application_url
-        self.driver = self._init_driver()
+        self.driver = self._init_driver(headless)
         self.wait = WebDriverWait(self.driver, 30)
         self._visit_page(self.application_url)
 
     @staticmethod
-    def _init_driver():
+    def _init_driver(headless: bool = False):
         """
         Initialize the Selenium driver.
 
@@ -35,6 +31,9 @@ class Browser:
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-extensions")
+
+        if headless:
+            options.add_argument("--headless")
 
         # Allow clipboard access for specific sites.
         options.add_experimental_option(

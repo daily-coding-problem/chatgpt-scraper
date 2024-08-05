@@ -17,6 +17,7 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
   - [Configuring TEST_ACCOUNTS](#configuring-test_accounts)
   - [Target a Specific ChatGPT Account](#target-a-specific-chatgpt-account)
   - [Use Temporary Chat Mode](#use-temporary-chat-mode)
+  - [Configure Headless Mode](#configure-headless-mode)
   - [Configure Log Level](#configure-log-level)
 - [Usage](#usage)
 - [License](#license)
@@ -176,6 +177,16 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
    ```
 
    If set to `true`, this will toggle the _temporary chat_ mode in ChatGPT's interface and not store any chat history.
+
+#### Configure Headless Mode
+
+You can set the `CHATGPT_HEADLESS` environment variable to `true` to run the scraper in headless mode.
+
+   ```sh
+   export CHATGPT_HEADLESS="true"
+   ```
+
+If set to `true`, the scraper will run in headless mode, which means the browser will not be visible during the scraping process.
 
 #### Configure Log Level
 
