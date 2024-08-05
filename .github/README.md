@@ -25,6 +25,8 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 - Supports multiple login methods for ChatGPT (Basic and Google).
 - Supports 2FA for secure login methods.
 - Utilizes Docker for easy setup and environment management.
+- Supports temporary chat mode for ChatGPT.
+- Provides mechanisms to copy ChatGPT responses in Markdown or Plain Text format.
 
 ## Prerequisites
 
@@ -106,7 +108,7 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
    poetry run python accounts_serializer.py \
        --emails test@company.com user@anothercompany.com \
        --passwords password123 userpassword456 \
-       --providers basic basic \
+       --providers basic google \
        --secrets google:google-secret-abc chatgpt:chatgpt-secret-xyz github:github-secret-123 aws:aws-secret-789
    ```
 
@@ -123,7 +125,7 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
            }
        },
        "user@anothercompany.com": {
-           "provider": "basic",
+           "provider": "google",
            "password": "userpassword456",
            "secret": {
                "github": "github-secret-123",
