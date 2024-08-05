@@ -125,13 +125,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--temporary-chat",
         type=bool,
-        default=os.getenv("CHATGPT_TEMPORARY_CHAT"),
+        default=os.getenv("CHATGPT_TEMPORARY_CHAT") or False,
+        required=False,
         help="Enable temporary chat mode."
     )
     parser.add_argument(
         "--headless",
         type=bool,
-        default=os.getenv("CHATGPT_HEADLESS"),
+        default=os.getenv("CHATGPT_HEADLESS") or False,
+        required=False,
         help="Run the browser in headless mode."
     )
 
