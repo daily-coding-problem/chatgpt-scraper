@@ -13,7 +13,11 @@ A Selenium-based ChatGPT interaction automation tool. This script initializes a 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-	- [Configuring TEST_ACCOUNTS](#configuring-test_accounts)
+  - [Environment Variables](#environment-variables)
+  - [Configuring TEST_ACCOUNTS](#configuring-test_accounts)
+  - [Target a Specific ChatGPT Account](#target-a-specific-chatgpt-account)
+  - [Use Temporary Chat Mode](#use-temporary-chat-mode)
+  - [Configure Log Level](#configure-log-level)
 - [Usage](#usage)
 - [License](#license)
 
@@ -163,7 +167,7 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
 
    The email should be one of the emails in the `TEST_ACCOUNTS` JSON structure.
 
-#### Use _Temporary Chat_ Mode
+#### Use Temporary Chat Mode
 
    If you want to use the _Temporary Chat_ mode, set the `TEMPORARY_CHAT` environment variable to `true`.
 
@@ -172,6 +176,16 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
    ```
 
    If set to `true`, this will toggle the _temporary chat_ mode in ChatGPT's interface and not store any chat history.
+
+#### Configure Log Level
+
+   You can set the log level for the scraper by setting the `LOG_LEVEL` environment variable. The default log level is `INFO`.
+
+   ```sh
+   export LOG_LEVEL="DEBUG"
+   ```
+
+   The available log levels are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`.
 
 ## Usage
 
