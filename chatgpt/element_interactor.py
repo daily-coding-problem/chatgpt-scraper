@@ -1,7 +1,8 @@
 import logging
 import time
 
-from selenium.common import ElementClickInterceptedException, TimeoutException, NoSuchElementException
+from selenium.common import ElementClickInterceptedException, TimeoutException, NoSuchElementException, \
+    JavascriptException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -71,11 +72,26 @@ class ElementInteractor:
 
         :param element: The element to click.
         """
+        time.sleep(2)  # Small delay to allow for the element to be fully visible
+
+        # Check if the element is visible and clickable
+        if not element.is_displayed() or not element.is_enabled():
+            # Scroll the element into view
+            self.scroll_into_view(element)
+
+            # Check if the element is now visible and clickable
+            if not element.is_displayed() or not element.is_enabled():
+                logging.error(f"Element not clickable: {element.get_attribute('outerHTML')}")
+                return
+
         try:
             ActionChains(self.browser.driver).move_to_element(element).click().perform()
-        except ElementClickInterceptedException as e:
+        except (ElementClickInterceptedException, JavascriptException) as e:
             logging.warning(f"Click intercepted, retrying with JavaScript click: {e}")
-            self.browser.driver.execute_script("arguments[0].click();", element)
+            try:
+                self.browser.driver.execute_script("arguments[0].click();", element)
+            except JavascriptException as e:
+                logging.error(f"Failed to click element: {element}) with JavaScript: {e}")
 
     def interact_with_element(self, by, selector, text=None, timeout=10):
         """

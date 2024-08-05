@@ -25,7 +25,7 @@ class LoginMethod(ABC):
 
     @abstractmethod
     def login(self, email: str, account: dict) -> bool:
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def derive_login_provider(account: dict):

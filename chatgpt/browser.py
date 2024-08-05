@@ -1,6 +1,11 @@
 import random
 import time
+
 import undetected_chromedriver as uc
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
@@ -16,7 +21,7 @@ class Browser:
         self.application_url = application_url
         self.driver = self._init_driver()
         self.wait = WebDriverWait(self.driver, 30)
-        self._visit_page()
+        self._visit_page(self.application_url)
 
     @staticmethod
     def _init_driver():
@@ -31,6 +36,16 @@ class Browser:
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-extensions")
 
+        # Allow clipboard access for specific sites.
+        options.add_experimental_option(
+            "prefs", {
+                "profile.managed_default_content_settings.clipboard": 1,
+                "profile.content_settings.exceptions.clipboard": {
+                    "https://chatgpt.com:443,*": {"setting": 1}  # Allow clipboard access for chatgpt.com.
+                }
+            }
+        )
+
         if is_linux():
             options.add_argument("--headless")
 
@@ -38,11 +53,16 @@ class Browser:
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         return driver
 
-    def _visit_page(self):
+    def _visit_page(self, url: str):
         """
         Visit the application URL.
+
+        :param url: The URL to visit.
         """
-        self.driver.get(self.application_url)
+        if not url:
+            raise ValueError("URL is required.")
+
+        self.driver.get(url)
         time.sleep(random.uniform(2, 5))
 
     def find_element(self, by: str, value: str) -> WebElement:
