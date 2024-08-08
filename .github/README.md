@@ -70,12 +70,6 @@ If you would like to use Docker, ensure Docker and Docker Compose are installed 
 docker compose build
 ```
 
-**Create the Network**
-
-```sh
-docker network create dcp
-```
-
 ## Configuration
 
 ### Environment Variables
