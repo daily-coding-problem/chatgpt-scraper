@@ -83,29 +83,24 @@ if __name__ == "__main__":
         """
     )
 
-    system_prompt = "You are ChatGPT, a helpful assistant."
-    user_prompts = [
-        "What is the meaning of life?",
-        "How do you handle multiple requests?",
-        "Can you give me some advice on productivity?"
-    ]
-
     config = Configuration()
+
+    user_prompts_default = os.getenv("CHATGPT_USER_PROMPTS")  # Default user prompts from the environment
 
     # Add arguments for the system prompt and user prompts
     parser.add_argument(
         "--system-prompt",
-        default=system_prompt,
+        default=os.getenv("CHATGPT_SYSTEM_PROMPT"),
         type=str,
         required=False,
         help="System prompt for the chatbot."
     )
     parser.add_argument(
         "--user-prompts",
-        default=user_prompts,
+        default=os.getenv("CHATGPT_USER_PROMPTS"),
         type=str,
         nargs='+',
-        required=False,
+        required=user_prompts_default is None,  # Require user prompts if not provided in the environment
         help="User prompts for the chatbot."
     )
     parser.add_argument(

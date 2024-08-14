@@ -1,8 +1,17 @@
 services:
     chatgpt-scraper:
         build: .
+        container_name: chatgpt-scraper
+        image: chatgpt-scraper:latest
         volumes:
             - ./scripts/entrypoint.sh:/usr/src/app/entrypoint.sh
-        env_file:
-            - .env
+        environment:
+            - CHATGPT_SYSTEM_PROMPT=${CHATGPT_SYSTEM_PROMPT}
+            - CHATGPT_USER_PROMPTS=${CHATGPT_USER_PROMPTS}
+            - TEST_ACCOUNTS=${TEST_ACCOUNTS}
+            - CHATGPT_ACCOUNT=${CHATGPT_ACCOUNT}
+            - CHATGPT_TEMPORARY_CHAT=${CHATGPT_TEMPORARY_CHAT}
+            - CHATGPT_HEADLESS=${CHATGPT_HEADLESS}
+            - LOG_LEVEL=${LOG_LEVEL}
+        platform: linux/amd64 # Use Rosetta to run on Apple Silicon
         entrypoint: ["/usr/src/app/entrypoint.sh"]

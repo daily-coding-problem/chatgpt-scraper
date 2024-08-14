@@ -182,6 +182,24 @@ You can set the `CHATGPT_HEADLESS` environment variable to `true` to run the scr
 
 If set to `true`, the scraper will run in headless mode, which means the browser will not be visible during the scraping process.
 
+#### Set System Prompt
+
+You can set the `SYSTEM_PROMPT` environment variable to a custom system prompt that will be used in the conversation with ChatGPT.
+
+   ```sh
+   export CHATGPT_SYSTEM_PROMPT="Hello, I am a system prompt."
+   ```
+
+#### Set User Prompts
+
+You can set the `USER_PROMPTS` environment variable to a list of user prompts that will be used in the conversation with ChatGPT.
+
+   ```sh
+   export CHATGPT_USER_PROMPTS="How are you doing today?" "What is your favorite color?"
+   ```
+
+If you do not set the `USER_PROMPTS` environment variable or do not pass `--user-prompts` with a valid value, the scraper will complain and exit.
+
 #### Configure Log Level
 
    You can set the log level for the scraper by setting the `LOG_LEVEL` environment variable. The default log level is `INFO`.
