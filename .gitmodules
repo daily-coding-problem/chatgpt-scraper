@@ -1,0 +1,3 @@
+[submodule "lib/chatgpt-scraper-lib"]
+	path = lib/chatgpt-scraper-lib
+	url = https://github.com/daily-coding-problem/chatgpt-scraper-lib

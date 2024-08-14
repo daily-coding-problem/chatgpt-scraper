@@ -45,7 +45,7 @@ Before you begin, ensure you have met the following requirements:
 **Clone the Repository**
 
 ```sh
-git clone https://github.com/daily-coding-problem/chatgpt-scraper.git
+git clone --recurse-submodules https://github.com/daily-coding-problem/chatgpt-scraper.git
 cd chatgpt-scraper
 ```
 
@@ -147,7 +147,7 @@ You can use the [Accounts Serializer](https://github.com/daily-coding-problem/ac
    Copy the base64-encoded string and set it as the value of the `TEST_ACCOUNTS` environment variable in your `.env` file or directly in your shell environment.
 
    ```sh
-   export TEST_ACCOUNTS="eyJ0ZXN0QGNvbXBhbnkuY29tIjogeyJwcm92aWRlciI6ICJiYXNpYyIsICJwYXNzd29yZCI6ICJwYXNzd29yZDEyMyIsICJzZWNyZXQiOiB7Imdvb2dsZSI6ICJnb29nbGUtc2VjcmV0LWFiYyIsICJjaGF0Z3B0IjogImNoYXRncHQtc2VjcmV0LXh5eiJ9fSwgInVzZXJAYW5vdGhlcmNvbXBhbnkuY29tIjogeyJwcm92aWRlciI6ICJiYXNpYyIsICJwYXNzd29yZCI6ICJ1c2VycGFzc3dvcmQ0NTYiLCAic2VjcmV0IjogeyJnaXRodWIiOiAiZ2l0aHViLXNlY3JldC0xMjMiLCAiYXdzIjogImF3cy1zZWNyZXQtNzg5In19fQ=="
+   export TEST_ACCOUNTS="base64_encoded_json_structure"
    ```
 
    Now, `TEST_ACCOUNTS` is configured and ready to be used by the ChatGPT scraper.
@@ -204,14 +204,6 @@ Or without Docker:
 
 ```sh
 poetry run python main.py
-```
-
-## Running Tests
-
-Run the tests with the following command:
-
-```sh
-poetry run pytest
 ```
 
 ## License
