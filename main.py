@@ -86,6 +86,8 @@ if __name__ == "__main__":
     config = Configuration()
 
     user_prompts_default = os.getenv("CHATGPT_USER_PROMPTS")  # Default user prompts from the environment
+    if user_prompts_default:
+        user_prompts_default = user_prompts_default.split(",")
 
     # Add arguments for the system prompt and user prompts
     parser.add_argument(
@@ -93,22 +95,25 @@ if __name__ == "__main__":
         default=os.getenv("CHATGPT_SYSTEM_PROMPT"),
         type=str,
         required=False,
-        help="System prompt for the chatbot."
+        help="System prompt for the chatbot. Provide a single prompt or set "
+             "CHATGPT_SYSTEM_PROMPT environment variable with a prompt."
     )
     parser.add_argument(
         "--user-prompts",
-        default=os.getenv("CHATGPT_USER_PROMPTS"),
+        default=user_prompts_default,
         type=str,
         nargs='+',
         required=user_prompts_default is None,  # Require user prompts if not provided in the environment
-        help="User prompts for the chatbot."
+        help="User prompts for the chatbot. Provide multiple prompts separated by spaces or set the "
+             "CHATGPT_USER_PROMPTS environment variable with prompts separated by commas."
     )
     parser.add_argument(
         "--account",
         default=os.getenv("CHATGPT_ACCOUNT"),
         type=str,
         required=False,
-        help="Account for authentication."
+        help="Account for authentication. Provide an email or identifier for the account."
+             "Set CHATGPT_ACCOUNT environment variable with the account email or identifier."
     )
     parser.add_argument(
         "--accounts",
@@ -122,14 +127,14 @@ if __name__ == "__main__":
         type=bool,
         default=os.getenv("CHATGPT_TEMPORARY_CHAT") or False,
         required=False,
-        help="Enable temporary chat mode."
+        help="Enable temporary chat mode. Set CHATGPT_TEMPORARY_CHAT environment variable to 'True' to enable."
     )
     parser.add_argument(
         "--headless",
         type=bool,
         default=os.getenv("CHATGPT_HEADLESS") or False,
         required=False,
-        help="Run the browser in headless mode."
+        help="Run the browser in headless mode. Set CHATGPT_HEADLESS environment variable to 'True' to enable."
     )
 
     args = parser.parse_args()
