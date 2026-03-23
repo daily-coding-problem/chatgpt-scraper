@@ -3,7 +3,7 @@ name = "gpt-scraper"
 version = "1.0.0"
 description = "A Selenium-based ChatGPT interaction automation tool. This script initializes a browser session, interacts with ChatGPT using predefined prompts, and facilitates automated conversations with ChatGPT. Ideal for fetching responses and conducting tests or demonstrations."
 authors = ["Nicholas Adamou <nicholasadamouemail@gmail.com>"]
-license = {text = "PolyForm-Shield-1.0.0"}
+license = "PolyForm-Shield-1.0.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
